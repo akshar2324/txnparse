@@ -40,7 +40,7 @@ Then add the dependency:
 
 ```kotlin
 dependencies {
-    implementation("com.github.akshar2324:txnparse:0.1.0")
+    implementation("com.github.akshar2324:txnparse:0.2.0")
 }
 ```
 
