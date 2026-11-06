@@ -1,0 +1,3158 @@
+{
+  "title": "AkSpend bank SMS test corpus",
+  "version": 1,
+  "created_on": "2026-11-06",
+  "scope": "Broad Indian bank and payment-message coverage; not an exhaustive list of all banks or verified production templates.",
+  "notes": [
+    "All account numbers, merchants, references, contacts and OTPs here are fictional placeholders. Never call numbers or open links from fixtures.",
+    "Bank-specific debit/credit pairs are synthetic common-grammar fixtures, not evidence that those banks issue these exact templates.",
+    "Sender values prefixed TEST- are illustrative labels, not verified DLT headers. Do not copy them into a production allowlist. The same sender family can be ambiguous.",
+    "Adapted public examples preserve message structure but replace identifiers and some wording. Their dates may omit a year; do not invent one without SMS metadata.",
+    "Expected amounts are decimal strings, not floating-point numbers. Currency must be retained; never assume foreign amounts are INR.",
+    "debit/credit describe account movement, not necessarily expense/income. Require confirmation for transfers, repayments, refunds, cash movement and unknown counterparties.",
+    "auto_book is false for all fixtures by design. This corpus does not authorize posting transactions.",
+    "Messages marked ignore may still be useful to a bill/reminder feature but must not create ledger purchases.",
+    "Historical bank labels do not assert current products, regulatory status or availability.",
+    "This file contains data only and does not change AkSpend permissions, runtime behavior or dependencies."
+  ],
+  "sources": [
+    {
+      "id": "reddit_templates_2024",
+      "url": "https://www.reddit.com/r/CreditCardsIndia/comments/1fpmhk4/help_me_build_an_expense_tracker_share_your_sms/",
+      "kind": "Community-posted SMS examples",
+      "use": "Seven adapted structural examples; not bank-verified."
+    },
+    {
+      "id": "everypaisa_reference",
+      "url": "https://github.com/ikppramesh/EveryPaisa/blob/main/TEST_TRANSACTIONS.md",
+      "kind": "Developer fixture collection",
+      "use": "Additional reading only; not copied into this corpus."
+    },
+    {
+      "id": "omoi_reference",
+      "url": "https://github.com/abhirajsinha/omoi-sms-parser",
+      "kind": "Parser project documentation",
+      "use": "Additional reading on negative/adversarial test coverage; not copied into this corpus."
+    }
+  ],
+  "classification_guide": {
+    "debit": "Outgoing movement; category requires context.",
+    "credit": "Incoming movement; not automatically income.",
+    "ignore": "Must not book a ledger transaction.",
+    "pending": "Wait for a final outcome.",
+    "uncertain": "Insufficient or contradictory evidence; manual review.",
+    "refund": "Link to original purchase; avoid double counting.",
+    "reversal": "Undo/reconcile original movement.",
+    "card_payment": "Repayment/settlement, not another purchase.",
+    "transfer_candidate": "Confirm ownership and match account movements.",
+    "investment_transfer_candidate": "Potential movement into an investment account.",
+    "cash_withdrawal": "Bank-to-cash movement candidate.",
+    "cash_deposit": "Cash-to-bank movement candidate.",
+    "cashback": "Reward credit; keep distinct from refund."
+  },
+  "sender_test_cases": [
+    {
+      "sender": "JD-HDFCBK-S",
+      "expected": "Bank-like structure only; verify trusted family, never authenticate solely from shape."
+    },
+    {
+      "sender": "+919000000000",
+      "expected": "Synthetic personal-number sender; do not auto-book bank-like text."
+    },
+    {
+      "sender": "TEST-BANK",
+      "expected": "Fixture sender only; never trust in production."
+    },
+    {
+      "sender": "AD-UNKNOWN-T",
+      "expected": "Unknown sender; manual review or ignore."
+    }
+  ],
+  "case_count": 183,
+  "cases": [
+    {
+      "id": "SBI_DEBIT",
+      "bank": "State Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-SBIINB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. State Bank of India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "SBI_CREDIT",
+      "bank": "State Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-SBIINB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. State Bank of India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "HDFC_DEBIT",
+      "bank": "HDFC Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-HDFCBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. HDFC Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "HDFC_CREDIT",
+      "bank": "HDFC Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-HDFCBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. HDFC Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "ICICI_DEBIT",
+      "bank": "ICICI Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-ICICIB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. ICICI Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "ICICI_CREDIT",
+      "bank": "ICICI Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-ICICIB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. ICICI Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "AXIS_DEBIT",
+      "bank": "Axis Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-AXISBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Axis Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "AXIS_CREDIT",
+      "bank": "Axis Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-AXISBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Axis Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "KOTAK_DEBIT",
+      "bank": "Kotak Mahindra Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-KOTAKB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Kotak Mahindra Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "KOTAK_CREDIT",
+      "bank": "Kotak Mahindra Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-KOTAKB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Kotak Mahindra Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "PNB_DEBIT",
+      "bank": "Punjab National Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-PNBSMS",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Punjab National Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "PNB_CREDIT",
+      "bank": "Punjab National Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-PNBSMS",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Punjab National Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "BOB_DEBIT",
+      "bank": "Bank of Baroda",
+      "provenance": "synthetic",
+      "sender": "TEST-BARBSM",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Bank of Baroda.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "BOB_CREDIT",
+      "bank": "Bank of Baroda",
+      "provenance": "synthetic",
+      "sender": "TEST-BARBSM",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Bank of Baroda.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "CANARA_DEBIT",
+      "bank": "Canara Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-CANBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Canara Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "CANARA_CREDIT",
+      "bank": "Canara Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-CANBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Canara Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "UNION_DEBIT",
+      "bank": "Union Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-UBISMS",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Union Bank of India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "UNION_CREDIT",
+      "bank": "Union Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-UBISMS",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Union Bank of India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "BOI_DEBIT",
+      "bank": "Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-BOISMS",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Bank of India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "BOI_CREDIT",
+      "bank": "Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-BOISMS",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Bank of India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "INDIAN_DEBIT",
+      "bank": "Indian Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-INDBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Indian Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "INDIAN_CREDIT",
+      "bank": "Indian Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-INDBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Indian Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "CENTRAL_DEBIT",
+      "bank": "Central Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-CENTBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Central Bank of India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "CENTRAL_CREDIT",
+      "bank": "Central Bank of India",
+      "provenance": "synthetic",
+      "sender": "TEST-CENTBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Central Bank of India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "IOB_DEBIT",
+      "bank": "Indian Overseas Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IOBCHN",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Indian Overseas Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "IOB_CREDIT",
+      "bank": "Indian Overseas Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IOBCHN",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Indian Overseas Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "UCO_DEBIT",
+      "bank": "UCO Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UCOBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. UCO Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "UCO_CREDIT",
+      "bank": "UCO Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UCOBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. UCO Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "BOM_DEBIT",
+      "bank": "Bank of Maharashtra",
+      "provenance": "synthetic",
+      "sender": "TEST-MAHABK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Bank of Maharashtra.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "BOM_CREDIT",
+      "bank": "Bank of Maharashtra",
+      "provenance": "synthetic",
+      "sender": "TEST-MAHABK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Bank of Maharashtra.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "PSB_DEBIT",
+      "bank": "Punjab & Sind Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-PSBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Punjab & Sind Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "PSB_CREDIT",
+      "bank": "Punjab & Sind Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-PSBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Punjab & Sind Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "IDBI_DEBIT",
+      "bank": "IDBI Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IDBIBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. IDBI Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "IDBI_CREDIT",
+      "bank": "IDBI Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IDBIBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. IDBI Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "IDFC_DEBIT",
+      "bank": "IDFC FIRST Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IDFCFB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. IDFC FIRST Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "IDFC_CREDIT",
+      "bank": "IDFC FIRST Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IDFCFB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. IDFC FIRST Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "YES_DEBIT",
+      "bank": "YES Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-YESBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. YES Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "YES_CREDIT",
+      "bank": "YES Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-YESBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. YES Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "INDUSIND_DEBIT",
+      "bank": "IndusInd Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-INDBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. IndusInd Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "INDUSIND_CREDIT",
+      "bank": "IndusInd Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-INDBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. IndusInd Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "FEDERAL_DEBIT",
+      "bank": "Federal Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-FEDBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Federal Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "FEDERAL_CREDIT",
+      "bank": "Federal Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-FEDBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Federal Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "SOUTHINDIAN_DEBIT",
+      "bank": "South Indian Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-SIBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. South Indian Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "SOUTHINDIAN_CREDIT",
+      "bank": "South Indian Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-SIBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. South Indian Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "KARNATAKA_DEBIT",
+      "bank": "Karnataka Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-KTKBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Karnataka Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "KARNATAKA_CREDIT",
+      "bank": "Karnataka Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-KTKBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Karnataka Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "KARUR_DEBIT",
+      "bank": "Karur Vysya Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-KVBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Karur Vysya Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "KARUR_CREDIT",
+      "bank": "Karur Vysya Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-KVBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Karur Vysya Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "CITYUNION_DEBIT",
+      "bank": "City Union Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-CUBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. City Union Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "CITYUNION_CREDIT",
+      "bank": "City Union Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-CUBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. City Union Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "DCB_DEBIT",
+      "bank": "DCB Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-DCBBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. DCB Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "DCB_CREDIT",
+      "bank": "DCB Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-DCBBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. DCB Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "RBL_DEBIT",
+      "bank": "RBL Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-RBLBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. RBL Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "RBL_CREDIT",
+      "bank": "RBL Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-RBLBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. RBL Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "DBS_DEBIT",
+      "bank": "DBS Bank India",
+      "provenance": "synthetic",
+      "sender": "TEST-DBSBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. DBS Bank India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "DBS_CREDIT",
+      "bank": "DBS Bank India",
+      "provenance": "synthetic",
+      "sender": "TEST-DBSBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. DBS Bank India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "BANDHAN_DEBIT",
+      "bank": "Bandhan Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-BDNSMS",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Bandhan Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "BANDHAN_CREDIT",
+      "bank": "Bandhan Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-BDNSMS",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Bandhan Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "TMB_DEBIT",
+      "bank": "Tamilnad Mercantile Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-TMBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Tamilnad Mercantile Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "TMB_CREDIT",
+      "bank": "Tamilnad Mercantile Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-TMBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Tamilnad Mercantile Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "JKB_DEBIT",
+      "bank": "Jammu & Kashmir Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-JKBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Jammu & Kashmir Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "JKB_CREDIT",
+      "bank": "Jammu & Kashmir Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-JKBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Jammu & Kashmir Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "DHAN_DEBIT",
+      "bank": "Dhanlaxmi Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-DLXBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Dhanlaxmi Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "DHAN_CREDIT",
+      "bank": "Dhanlaxmi Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-DLXBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Dhanlaxmi Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "CSB_DEBIT",
+      "bank": "CSB Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-CSBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. CSB Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "CSB_CREDIT",
+      "bank": "CSB Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-CSBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. CSB Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "AU_DEBIT",
+      "bank": "AU Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-AUBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. AU Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "AU_CREDIT",
+      "bank": "AU Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-AUBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. AU Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "EQUITAS_DEBIT",
+      "bank": "Equitas Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-EQBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Equitas Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "EQUITAS_CREDIT",
+      "bank": "Equitas Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-EQBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Equitas Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "UJJIVAN_DEBIT",
+      "bank": "Ujjivan Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UJJIVN",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Ujjivan Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "UJJIVAN_CREDIT",
+      "bank": "Ujjivan Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UJJIVN",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Ujjivan Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "ESAF_DEBIT",
+      "bank": "ESAF Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-ESAFBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. ESAF Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "ESAF_CREDIT",
+      "bank": "ESAF Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-ESAFBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. ESAF Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "JANA_DEBIT",
+      "bank": "Jana Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-JANABK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Jana Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "JANA_CREDIT",
+      "bank": "Jana Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-JANABK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Jana Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "UTKARSH_DEBIT",
+      "bank": "Utkarsh Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UTKBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Utkarsh Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "UTKARSH_CREDIT",
+      "bank": "Utkarsh Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UTKBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Utkarsh Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "SURYODAY_DEBIT",
+      "bank": "Suryoday Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-SURYOJ",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Suryoday Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "SURYODAY_CREDIT",
+      "bank": "Suryoday Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-SURYOJ",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Suryoday Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "UNITY_DEBIT",
+      "bank": "Unity Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UNITYB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Unity Small Finance Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "UNITY_CREDIT",
+      "bank": "Unity Small Finance Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-UNITYB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Unity Small Finance Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "AIRTEL_DEBIT",
+      "bank": "Airtel Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-AIRBNK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Airtel Payments Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "AIRTEL_CREDIT",
+      "bank": "Airtel Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-AIRBNK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Airtel Payments Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "IPPB_DEBIT",
+      "bank": "India Post Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IPBMSG",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. India Post Payments Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "IPPB_CREDIT",
+      "bank": "India Post Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-IPBMSG",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. India Post Payments Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "FINO_DEBIT",
+      "bank": "Fino Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-FINOBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Fino Payments Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "FINO_CREDIT",
+      "bank": "Fino Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-FINOBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Fino Payments Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "JIO_DEBIT",
+      "bank": "Jio Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-JIOPAY",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Jio Payments Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "JIO_CREDIT",
+      "bank": "Jio Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-JIOPAY",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Jio Payments Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "NSDL_DEBIT",
+      "bank": "NSDL Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-NSDLPB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. NSDL Payments Bank.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "NSDL_CREDIT",
+      "bank": "NSDL Payments Bank",
+      "provenance": "synthetic",
+      "sender": "TEST-NSDLPB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. NSDL Payments Bank.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "PAYTM_DEBIT",
+      "bank": "Paytm Payments Bank (historical fixtures only)",
+      "provenance": "synthetic",
+      "sender": "TEST-PAYTMB",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Paytm Payments Bank (historical fixtures only).",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "PAYTM_CREDIT",
+      "bank": "Paytm Payments Bank (historical fixtures only)",
+      "provenance": "synthetic",
+      "sender": "TEST-PAYTMB",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Paytm Payments Bank (historical fixtures only).",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "HSBC_DEBIT",
+      "bank": "HSBC India",
+      "provenance": "synthetic",
+      "sender": "TEST-HSBCIN",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. HSBC India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "HSBC_CREDIT",
+      "bank": "HSBC India",
+      "provenance": "synthetic",
+      "sender": "TEST-HSBCIN",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. HSBC India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "SC_DEBIT",
+      "bank": "Standard Chartered India",
+      "provenance": "synthetic",
+      "sender": "TEST-SCBANK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Standard Chartered India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "SC_CREDIT",
+      "bank": "Standard Chartered India",
+      "provenance": "synthetic",
+      "sender": "TEST-SCBANK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Standard Chartered India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "CITI_DEBIT",
+      "bank": "Citibank India (historical fixtures only)",
+      "provenance": "synthetic",
+      "sender": "TEST-CITIBK",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. Citibank India (historical fixtures only).",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "CITI_CREDIT",
+      "bank": "Citibank India (historical fixtures only)",
+      "provenance": "synthetic",
+      "sender": "TEST-CITIBK",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. Citibank India (historical fixtures only).",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "AMEX_DEBIT",
+      "bank": "American Express India",
+      "provenance": "synthetic",
+      "sender": "TEST-AMEXIN",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. American Express India.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "AMEX_CREDIT",
+      "bank": "American Express India",
+      "provenance": "synthetic",
+      "sender": "TEST-AMEXIN",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. American Express India.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "SBICARD_DEBIT",
+      "bank": "SBI Card",
+      "provenance": "synthetic",
+      "sender": "TEST-SBICRD",
+      "sms": "INR 250.00 debited from A/c XX1234 on 06-Nov-2026 for UPI to TEST MERCHANT. Ref TEST000001. Available balance INR 9750.00. SBI Card.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "UPI",
+        "account_last4": "1234",
+        "merchant": "TEST MERCHANT",
+        "balance": "9750.00"
+      }
+    },
+    {
+      "id": "SBICARD_CREDIT",
+      "bank": "SBI Card",
+      "provenance": "synthetic",
+      "sender": "TEST-SBICRD",
+      "sms": "INR 1500.00 credited to A/c XX1234 on 06-Nov-2026 from TEST SENDER via IMPS. Ref TEST000002. Available balance INR 11250.00. SBI Card.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "1500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "IMPS",
+        "account_last4": "1234",
+        "counterparty": "TEST SENDER",
+        "balance": "11250.00",
+        "income_category": null
+      }
+    },
+    {
+      "id": "PUBLIC_SBI_UPI",
+      "bank": "SBI",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "Dear UPI user A/C X1234 debited by 1046.0 on date 19Sep24 trf to TEST MERCHANT Refno TEST000003. If not u? call <HELPLINE>. -SBI",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "1046.00",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "PUBLIC_HDFC_SENT",
+      "bank": "HDFC",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "Amt Sent Rs.166.50 From HDFC Bank A/C *1234 To TESTCARD On 25-09 Ref TEST000004 Not You? Call <HELPLINE>",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "166.50",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "PUBLIC_HDFC_CARD",
+      "bank": "HDFC",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "Rs.500 spent on HDFC Bank Card x1234 at TEST STORE on 2024-09-25:19:19:33.Not U? To Block & Reissue Call <HELPLINE>",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "500.00",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "PUBLIC_HDFC_CARD_UPI",
+      "bank": "HDFC",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "Used Rs30.00 On HDFCBank Card 1234 At testmerchant@ybl by UPI TEST000005 On 23-09 Not You? Call <HELPLINE>",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "30.00",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "PUBLIC_ICICI_CARD",
+      "bank": "ICICI",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "INR 44.00 spent using ICICI Bank Card XX1234 on 21-Sep-24 on IND*TESTSTORE. Avl Limit: INR 8,811.73. If not you, call <HELPLINE>.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "44.00",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "PUBLIC_SBICARD",
+      "bank": "SBI Card",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "Rs.6,681.10 spent on your SBI Credit Card ending 1234 at TEST ONLINE STORE on 22/08/24. Trxn. not done by you? Report at <URL>",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "6681.10",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "PUBLIC_AMEX",
+      "bank": "American Express",
+      "provenance": "adapted_public_example",
+      "sender": "TEST-BANK",
+      "sms": "Alert: You've spent INR 13,444.70 on your AMEX card ** 01234 at TEST RETAIL on 23 September, 2024 at 07:40 PM IST. Call <HELPLINE> if this was not made by you.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "13444.70",
+        "auto_book": false,
+        "review_required": true
+      },
+      "source_id": "reddit_templates_2024"
+    },
+    {
+      "id": "EDGE_NEFT_SALARY",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 45000.00 credited to A/c XX1234 by NEFT from TEST EMPLOYER on 06-Nov-2026. Salary November. Bal INR 50000.00.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "45000.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "NEFT",
+        "income_category": "salary_candidate"
+      }
+    },
+    {
+      "id": "EDGE_RTGS",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250000.00 debited from A/c XX1234 via RTGS to TEST BENEFICIARY. Ref TESTRTGS1.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250000.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "RTGS"
+      }
+    },
+    {
+      "id": "EDGE_ATM",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Cash withdrawal of Rs.3,000.00 made using Debit Card X1234 at TEST ATM on 06-Nov-2026. Avl Bal Rs.7000.00.",
+      "expected": {
+        "classification": "cash_withdrawal",
+        "currency": "INR",
+        "amount": "3000.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "ATM",
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_ATM_REVERSED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "ATM withdrawal of INR 3000.00 has been reversed and credited to A/c XX1234. Ref TESTATM1.",
+      "expected": {
+        "classification": "reversal",
+        "currency": "INR",
+        "amount": "3000.00",
+        "auto_book": false,
+        "review_required": true,
+        "link_to_original": true
+      }
+    },
+    {
+      "id": "EDGE_ATM_FAILED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "ATM withdrawal for INR 3000.00 failed. No amount debited.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_POS",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 849.50 spent using Debit Card XX1234 at TEST GROCERY on 06-Nov-2026.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "849.50",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "POS"
+      }
+    },
+    {
+      "id": "EDGE_ECOM",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 999.00 spent on Credit Card XX1234 at TEST ONLINE SHOP. Available limit INR 100001.00.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "999.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "CARD"
+      }
+    },
+    {
+      "id": "EDGE_NACH",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 2500.00 debited from A/c XX1234 towards NACH TEST INSURANCE. Ref TESTNACH1.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "2500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "NACH"
+      }
+    },
+    {
+      "id": "EDGE_ECS",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Rs.1200.00 debited via ECS for TEST SERVICE from A/c XX1234.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "1200.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "ECS"
+      }
+    },
+    {
+      "id": "EDGE_EMI",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Loan EMI of INR 12500.00 debited from A/c XX1234 on 06-Nov-2026.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "12500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "EMI"
+      }
+    },
+    {
+      "id": "EDGE_FEE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 23.60 debited from A/c XX1234 towards SMS charges including GST.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "23.60",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": "bank_fee"
+      }
+    },
+    {
+      "id": "EDGE_INTEREST",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Interest INR 125.50 credited to Savings A/c XX1234.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "125.50",
+        "auto_book": false,
+        "review_required": true,
+        "income_category": "interest_candidate"
+      }
+    },
+    {
+      "id": "EDGE_REFUND",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Refund INR 499.00 credited to your Card XX1234 from TEST SHOP for purchase Ref TESTBUY1.",
+      "expected": {
+        "classification": "refund",
+        "currency": "INR",
+        "amount": "499.00",
+        "auto_book": false,
+        "review_required": true,
+        "link_to_original": true,
+        "income_category": null
+      }
+    },
+    {
+      "id": "EDGE_REVERSAL",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "UPI transaction Ref TESTUPI1 for Rs.250.00 reversed. Amount credited back to A/c XX1234.",
+      "expected": {
+        "classification": "reversal",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "link_to_original": true
+      }
+    },
+    {
+      "id": "EDGE_CASHBACK",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Cashback of Rs.10.00 credited to A/c XX1234 for TEST OFFER.",
+      "expected": {
+        "classification": "cashback",
+        "currency": "INR",
+        "amount": "10.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_CC_REPAYMENT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Payment of INR 5000.00 received towards your Credit Card XX5678. Thank you.",
+      "expected": {
+        "classification": "card_payment",
+        "currency": "INR",
+        "amount": "5000.00",
+        "auto_book": false,
+        "review_required": true,
+        "income_category": null,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_OWN_TRANSFER_DEBIT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 5000.00 debited from A/c XX1234 transferred to your A/c XX5678. Ref TESTOWN1.",
+      "expected": {
+        "classification": "transfer_candidate",
+        "currency": "INR",
+        "amount": "5000.00",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_OWN_TRANSFER_CREDIT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 5000.00 credited to your A/c XX5678 from your A/c XX1234. Ref TESTOWN1.",
+      "expected": {
+        "classification": "transfer_candidate",
+        "currency": "INR",
+        "amount": "5000.00",
+        "auto_book": false,
+        "review_required": true,
+        "income_category": null
+      }
+    },
+    {
+      "id": "EDGE_FD_CREATE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 10000.00 debited from A/c XX1234 towards Fixed Deposit creation.",
+      "expected": {
+        "classification": "investment_transfer_candidate",
+        "currency": "INR",
+        "amount": "10000.00",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_FD_MATURITY",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "FD maturity proceeds INR 10500.00 credited to A/c XX1234, including interest INR 500.00.",
+      "expected": {
+        "classification": "credit",
+        "currency": "INR",
+        "amount": "10500.00",
+        "auto_book": false,
+        "review_required": true,
+        "income_category": null,
+        "interest_component": "500.00"
+      }
+    },
+    {
+      "id": "EDGE_SWEEP",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 340.00 credited to A/c XX1234 towards Sweep-in.",
+      "expected": {
+        "classification": "transfer_candidate",
+        "currency": "INR",
+        "amount": "340.00",
+        "auto_book": false,
+        "review_required": true,
+        "income_category": null
+      }
+    },
+    {
+      "id": "EDGE_SIP",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 2000.00 debited from A/c XX1234 towards TEST MUTUAL FUND SIP.",
+      "expected": {
+        "classification": "investment_transfer_candidate",
+        "currency": "INR",
+        "amount": "2000.00",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_UPI_FAILED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "UPI payment of INR 250.00 to TEST STORE failed. Your account has not been debited.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_UPI_PENDING",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "UPI transfer INR 250.00 to TEST STORE is pending. Final status will be notified.",
+      "expected": {
+        "classification": "pending",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_FAILED_BUT_DEBITED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "UPI payment INR 250.00 failed, but your account was debited. Reversal is pending.",
+      "expected": {
+        "classification": "uncertain",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_COLLECT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "You have received a UPI collect request for INR 1500.00 from TEST MERCHANT. Approve in your UPI app.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_PREDEBIT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Your A/c XX1234 will be debited INR 499.00 on 08-Nov-2026 for TEST STREAMING mandate.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_MANDATE_CREATED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "UPI AutoPay mandate registered for TEST SERVICE with maximum amount INR 5000.00.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_MANDATE_EXECUTED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 499.00 debited from A/c XX1234 for UPI AutoPay TEST SERVICE on 06-Nov-2026.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "499.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_OTP",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "TEST OTP 000000 for transaction of INR 999.00 on Card XX1234. Do not share.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_OTP_WITH_DEBIT_WORD",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "TEST OTP 000000 to authorize debit of INR 999.00 from A/c XX1234. Valid for 5 minutes.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_BALANCE_ONLY",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Available balance in your A/c XX1234 is INR 15000.00 as of 06-Nov-2026.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_LOW_BALANCE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Your account balance is below INR 1000.00. Maintain sufficient balance.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_BILL_GENERATED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Statement generated for Card XX1234. Total due INR 15000.00. Minimum due INR 750.00. Pay by 25-Nov-2026.",
+      "expected": {
+        "classification": "bill_statement",
+        "currency": "INR",
+        "amount": "15000.00",
+        "auto_book": false,
+        "review_required": true,
+        "minimum_due": "750.00",
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_PAYMENT_REMINDER",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Reminder: INR 15000.00 outstanding on your Credit Card XX1234. Pay before 25-Nov-2026.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_CARD_DECLINED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Your Card XX1234 transaction for INR 799.00 at TEST STORE was declined due to insufficient limit.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_CARD_LIMIT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Your Credit Card limit increased to INR 200000.00. Available limit INR 185000.00.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_PROMO",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Get a pre-approved loan of INR 500000.00. Cashback up to INR 1000.00. Apply now.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_KYC",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Update KYC for A/c XX1234. Minimum balance INR 1000.00. No transaction performed.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_DISPUTE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Dispute for INR 944.00 transaction on Card XX1234 was rejected. This is a dispute status update.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_CURRENCY_SYMBOL",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Rs. 1,23,456.78 debited from A/c XX1234 at TEST STORE. Bal Rs.9,87,654.32.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "123456.78",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_RUPEE_SYMBOL",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "₹250.50 debited from A/c XX1234 to TEST STORE. Avl Bal ₹9750.50.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.50",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_NO_CURRENCY",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "A/C X1234 debited by 284.0 on date 06Nov26 trf to TEST MERCHANT Refno TEST123.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "284.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_MULTILINE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250.00 debited\nfrom A/c XX1234\nTo TEST STORE\nBalance INR 9750.00",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_NONBREAKING_SPACE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250.00 debited from A/c XX1234 to TEST STORE.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_LOWERCASE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "inr 250.00 DEBITED FROM a/c xx1234 TO test store.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_BALANCE_FIRST",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Available balance INR 9750.00. INR 250.00 debited from A/c XX1234 to TEST STORE.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_COUNTERPARTY_CREDIT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "ICICI Bank Acct XX1234 debited for Rs 110.00 on 06-Nov-26; TEST MERCHANT credited.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "110.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_AMBIGUOUS_AMOUNTS",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Transaction alert: INR 250.00 / INR 500.00. Contact branch for details.",
+      "expected": {
+        "classification": "uncertain",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_NEGATIVE_AMOUNT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR -250.00 debited from A/c XX1234.",
+      "expected": {
+        "classification": "uncertain",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_ZERO_AMOUNT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 0.00 card verification at TEST SERVICE using Card XX1234.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    },
+    {
+      "id": "EDGE_MISSING_AMOUNT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Your A/c XX1234 has been debited at TEST STORE. Contact bank for details.",
+      "expected": {
+        "classification": "uncertain",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_TRUNCATED",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250.00 debited from",
+      "expected": {
+        "classification": "uncertain",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true
+      }
+    },
+    {
+      "id": "EDGE_PERSONAL_SENDER",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Hi, I debited INR 500 from my bank for your order. Please pay me.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false,
+        "sender_trust": "personal"
+      }
+    },
+    {
+      "id": "EDGE_FAKE_BANK_TEXT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "BANK ALERT: INR 50000 debited! Send OTP to TEST SUPPORT immediately.",
+      "expected": {
+        "classification": "uncertain",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": true,
+        "sender_trust": "unverified"
+      }
+    },
+    {
+      "id": "EDGE_HINDI",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "आपके खाते XX1234 से ₹250.00 का भुगतान TEST STORE को किया गया। उपलब्ध शेष ₹9750.00।",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "language": "hi"
+      }
+    },
+    {
+      "id": "EDGE_GUJARATI",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "તમારા ખાતા XX1234 માંથી ₹250.00 TEST STORE ને ચૂકવાયા. ઉપલબ્ધ બેલેન્સ ₹9750.00.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "language": "gu"
+      }
+    },
+    {
+      "id": "EDGE_USD_CARD",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "USD 19.99 spent using Credit Card XX1234 at TEST GLOBAL STORE. Avl limit INR 100000.00.",
+      "expected": {
+        "classification": "debit",
+        "currency": "USD",
+        "amount": "19.99",
+        "auto_book": false,
+        "review_required": true,
+        "converted_inr_amount": null
+      }
+    },
+    {
+      "id": "EDGE_EUR_CARD",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "EUR 12.50 spent using Credit Card XX1234 at TEST GLOBAL STORE.",
+      "expected": {
+        "classification": "debit",
+        "currency": "EUR",
+        "amount": "12.50",
+        "auto_book": false,
+        "review_required": true,
+        "converted_inr_amount": null
+      }
+    },
+    {
+      "id": "EDGE_AED_CARD",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "AED 31.89 spent using Card XX1234 at TEST STORE. Rewards AED 0.19. Balance AED 30.35.",
+      "expected": {
+        "classification": "debit",
+        "currency": "AED",
+        "amount": "31.89",
+        "auto_book": false,
+        "review_required": true,
+        "balance": "30.35"
+      }
+    },
+    {
+      "id": "EDGE_DUPLICATE_A",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250.00 debited from A/c XX1234 to TEST STORE. UPI Ref TESTDUP1.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "dedup_group": "same_transaction_1"
+      }
+    },
+    {
+      "id": "EDGE_DUPLICATE_B",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250.00 debited from A/c XX1234 to TEST STORE. UPI Ref TESTDUP1.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "dedup_group": "same_transaction_1"
+      }
+    },
+    {
+      "id": "EDGE_SAME_AMOUNT_DIFFERENT_REF",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 250.00 debited from A/c XX1234 to TEST STORE. UPI Ref TESTDUP2.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "dedup_group": "different_transaction_2"
+      }
+    },
+    {
+      "id": "EDGE_BANK_AND_WALLET_DUP",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "You paid INR 250.00 to TEST STORE using linked bank A/c XX1234. UPI Ref TESTDUP1.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "250.00",
+        "auto_book": false,
+        "review_required": true,
+        "dedup_group": "same_transaction_1",
+        "provider": "wallet_notification"
+      }
+    },
+    {
+      "id": "EDGE_WALLET_TOPUP",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 1000.00 added to TEST WALLET from bank A/c XX1234.",
+      "expected": {
+        "classification": "transfer_candidate",
+        "currency": "INR",
+        "amount": "1000.00",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_BNPL_PURCHASE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 799.00 purchase at TEST STORE using TEST PAY LATER account XX1234.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "799.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "BNPL"
+      }
+    },
+    {
+      "id": "EDGE_BNPL_REPAYMENT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Repayment INR 799.00 received for TEST PAY LATER account XX1234.",
+      "expected": {
+        "classification": "card_payment",
+        "currency": "INR",
+        "amount": "799.00",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_UPI_LITE_TOPUP",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 500.00 debited from A/c XX1234 towards UPI Lite top-up.",
+      "expected": {
+        "classification": "transfer_candidate",
+        "currency": "INR",
+        "amount": "500.00",
+        "auto_book": false,
+        "review_required": true,
+        "expense_category": null
+      }
+    },
+    {
+      "id": "EDGE_CHEQUE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Cheque TEST001 for INR 8500.00 paid from A/c XX1234.",
+      "expected": {
+        "classification": "debit",
+        "currency": "INR",
+        "amount": "8500.00",
+        "auto_book": false,
+        "review_required": true,
+        "channel": "CHEQUE"
+      }
+    },
+    {
+      "id": "EDGE_CASH_DEPOSIT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Cash deposit INR 2000.00 credited to A/c XX1234 at TEST BRANCH.",
+      "expected": {
+        "classification": "cash_deposit",
+        "currency": "INR",
+        "amount": "2000.00",
+        "auto_book": false,
+        "review_required": true,
+        "income_category": null
+      }
+    },
+    {
+      "id": "EDGE_DEBIT_AND_FEE",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "INR 1000.00 withdrawn from A/c XX1234. Fee INR 23.60 charged separately. Total debit INR 1023.60.",
+      "expected": {
+        "classification": "uncertain",
+        "currency": "INR",
+        "amount": "1023.60",
+        "auto_book": false,
+        "review_required": true,
+        "principal": "1000.00",
+        "fee": "23.60"
+      }
+    },
+    {
+      "id": "EDGE_PHONE_NUMBER_NO_AMOUNT",
+      "bank": "Generic / illustrative",
+      "provenance": "synthetic",
+      "sender": "TEST-BANK",
+      "sms": "Your account XX1234 is active. Contact TEST support on 1800000000.",
+      "expected": {
+        "classification": "ignore",
+        "currency": null,
+        "amount": null,
+        "auto_book": false,
+        "review_required": false
+      }
+    }
+  ]
+}
