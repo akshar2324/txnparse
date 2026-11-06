@@ -1,0 +1,31 @@
+{
+  "id": "axis",
+  "name": "Axis Bank",
+  "country": "IN",
+  "currency": "INR",
+  "senders": ["AXISBK", "AXISMR"],
+  "dateFormats": ["dd-MM-yy"],
+  "verified": false,
+  "patterns": [
+    {
+      "type": "DEBIT",
+      "regex": "(?:INR|Rs\\.?)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) debited A/c no\\. [xX*]*(?<account>\\d{3,6}) (?<date>\\d{2}-\\d{2}-\\d{2}), [\\d:]+ UPI/P2[MA]/(?<ref>\\d+)/(?<merchant>.+?)(?: Not you|$)"
+    },
+    {
+      "type": "CREDIT",
+      "regex": "(?:INR|Rs\\.?)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) credited to A/c no\\. [xX*]*(?<account>\\d{3,6}) on (?<date>\\d{2}-\\d{2}-\\d{2}) at [\\d:]+ IST\\. Info- (?:[A-Z]+/)?(?<merchant>.+?)\\. Avl Bal- (?:INR|Rs\\.?)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
+    }
+  ],
+  "samples": [
+    {
+      "sender": "VM-AXISBK-S",
+      "sms": "INR 899.00 debited\nA/c no. XX5555\n14-01-26, 18:45:10\nUPI/P2M/401234567896/ZOMATO\nNot you? SMS BLOCKUPI to your bank",
+      "expected": { "type": "DEBIT", "amount": "899.00", "merchant": "ZOMATO", "account": "5555", "date": "2026-01-14", "ref": "401234567896", "channel": "UPI" }
+    },
+    {
+      "sender": "AXISBK",
+      "sms": "INR 15,000.00 credited to A/c no. XX5555 on 15-01-26 at 10:02:33 IST. Info- NEFT/ACME CORP. Avl Bal- INR 42,310.75 - Axis Bank",
+      "expected": { "type": "CREDIT", "amount": "15000.00", "merchant": "ACME CORP", "account": "5555", "balance": "42310.75", "date": "2026-01-15", "channel": "NEFT" }
+    }
+  ]
+}

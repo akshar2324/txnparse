@@ -1,0 +1,33 @@
+name: Bank format
+description: Share a bank SMS / notification format that isn't parsed correctly
+labels: ["bank-format", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Redact before pasting.** Change account digits, reference numbers, names, VPAs and amounts.
+        Keep spacing, punctuation and line breaks exactly as they are.
+  - type: input
+    id: bank
+    attributes:
+      label: Bank
+      placeholder: Kotak Mahindra Bank
+    validations:
+      required: true
+  - type: input
+    id: sender
+    attributes:
+      label: Sender ID
+      placeholder: VM-KOTAKB
+  - type: textarea
+    id: messages
+    attributes:
+      label: Redacted messages (one per block)
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should be extracted?
+      placeholder: "DEBIT, amount 100.00, merchant ZOMATO, account 1234, date 2026-01-05"

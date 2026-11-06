@@ -1,0 +1,40 @@
+{
+  "id": "sbi",
+  "name": "State Bank of India",
+  "country": "IN",
+  "currency": "INR",
+  "senders": ["SBIUPI", "SBIINB", "SBIPSG", "ATMSBI", "CBSSBI"],
+  "dateFormats": ["ddMMMyy", "dd/MM/yy", "dd-MM-yy"],
+  "verified": false,
+  "patterns": [
+    {
+      "type": "DEBIT",
+      "regex": "A/C [xX*]*(?<account>\\d{3,6}) debited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on date (?<date>\\d{2}[A-Za-z]{3}\\d{2}) trf to (?<merchant>.+?) Refno (?<ref>\\d+)"
+    },
+    {
+      "type": "CREDIT",
+      "regex": "A/c [xX*]*(?<account>\\d{3,6})-credited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}[A-Za-z]{3}\\d{2}) transfer from (?<merchant>.+?) Ref No (?<ref>\\d+)"
+    },
+    {
+      "type": "DEBIT",
+      "regex": "A/C [xX*]*(?<account>\\d{3,6}) has a debit by (?:transfer|ATM withdrawal|cash withdrawal) of (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}/\\d{2}/\\d{2})\\. Avl Bal (?:Rs\\.?|INR)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
+    }
+  ],
+  "samples": [
+    {
+      "sender": "BP-SBIUPI",
+      "sms": "Dear UPI user A/C X4321 debited by 120.0 on date 11Jan26 trf to CHAI POINT Refno 401234567894. If not u? call your bank -SBI",
+      "expected": { "type": "DEBIT", "amount": "120.00", "merchant": "CHAI POINT", "account": "4321", "date": "2026-01-11", "ref": "401234567894", "channel": "UPI" }
+    },
+    {
+      "sender": "AD-SBIUPI",
+      "sms": "Dear SBI User, your A/c X4321-credited by Rs.2500 on 12Jan26 transfer from PRIYA SHARMA Ref No 401234567895 -SBI",
+      "expected": { "type": "CREDIT", "amount": "2500.00", "merchant": "PRIYA SHARMA", "account": "4321", "date": "2026-01-12", "ref": "401234567895" }
+    },
+    {
+      "sender": "ATMSBI",
+      "sms": "Your A/C XXXXX4321 has a debit by ATM withdrawal of Rs 2,000.00 on 13/01/26. Avl Bal Rs 18,250.50.-SBI",
+      "expected": { "type": "DEBIT", "amount": "2000.00", "account": "4321", "balance": "18250.50", "date": "2026-01-13", "channel": "ATM" }
+    }
+  ]
+}
