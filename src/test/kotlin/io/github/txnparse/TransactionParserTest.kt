@@ -31,6 +31,9 @@ class TransactionParserTest {
             "rahul@okaxis has requested money of Rs 300 from your A/c. Approve in your UPI app." to "request",
             "Txn of Rs 999.00 on your card XX1234 has been declined." to "failed",
             "Rs 499.00 will be debited from A/c XX1234 on 25-Jan-26 for NETFLIX autopay." to "scheduled",
+            "Reminder: INR 15000.00 outstanding on your Credit Card XX1234. Pay before 25-Nov-2026." to "due",
+            "Your Credit Card limit increased to INR 200000.00. Available limit INR 185000.00." to "limit_change",
+            "Hi, I debited INR 500 from my bank for your order. Please pay me." to "personal",
             "Payment of Rs.23456.00 has been received towards your HDFC Bank Credit Card XX9012 on 05-11-26. Thank you." to "card_bill_payment",
             "We have received payment of Rs.5,000.00 towards your SBI Credit Card ending 3456. Thank you." to "card_bill_payment",
         )

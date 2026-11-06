@@ -2,7 +2,8 @@ package io.github.txnparse
 
 /**
  * Rejects bank messages that mention money but didn't move any:
- * OTPs, bill reminders, collect requests, failed or scheduled payments.
+ * OTPs, bill reminders, limit changes, collect requests, failed or scheduled payments,
+ * and messages written by a person rather than a bank.
  */
 public class IgnoreFilter(private val rules: List<Pair<String, Regex>>) {
 
@@ -23,7 +24,10 @@ public class IgnoreFilter(private val rules: List<Pair<String, Regex>>) {
                 "failed" to r("\\b(failed|declined|unsuccessful|could not be processed)\\b"),
                 "request" to r("\\b(has requested|requested money|collect request|payment request)\\b"),
                 "scheduled" to r("\\b(will be|to be|shall be) (debited|deducted|charged)\\b"),
-                "due" to r("\\b(is due|due on|due date|minimum (amount )?due|total (amount|amt) due)\\b"),
+                "due" to r("\\b(is due|due on|due date|minimum (amount )?due|total (amount|amt) due|pay (before|by))\\b|^reminder\\b"),
+                "limit_change" to r("\\blimit (has been )?(increased|enhanced|revised|reduced|decreased|changed)\\b"),
+                // Banks write "you" or "we"; a first-person "I paid" is a person, not a bank.
+                "personal" to r("\\bI (have )?(debited|paid|sent|transferred)\\b|\\bpay me\\b"),
                 // Paying a credit card bill is a transfer from your bank account, not income.
                 // Counting it again would double-count the card spends.
                 // Refunds ("Rs 500 credited to your credit card") don't say "payment", so they still parse.
