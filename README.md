@@ -18,7 +18,7 @@ Every expense tracker, budgeting app and personal-finance tool in India ends up 
 
 - **Bank rules as JSON.** You can add a bank without writing Kotlin.
 - **Self-testing rules.** Each rule file includes sample messages, and CI checks every one of them.
-- **Ignores non-transactions:** OTPs, bill-due reminders, UPI collect requests, failed or declined payments, and scheduled autopays.
+- **Ignores non-transactions:** OTPs, bill-due reminders, UPI collect requests, failed or declined payments, scheduled autopays, and credit card bill payments.
 - **Generic fallback** for banks without a rule yet, marked `Confidence.LOW` so you can treat those results with care.
 - **Extracts:** amount, debit/credit, merchant or payee, account last digits, balance, date, reference number and channel (UPI / card / ATM / NEFT / IMPS / RTGS).
 - **Works offline.** No network calls and no data leaves the device. One dependency (`kotlinx-serialization-json`).
@@ -87,14 +87,17 @@ TransactionParser(
 
 ## Supported banks
 
-| Bank | Rule | Formats | Verified on real SMS |
+| Bank | Rule | Formats | Seen in real messages |
 |---|---|---|---|
-| Axis Bank | [`axis.json`](src/main/resources/txnparse/rules/axis.json) | UPI debit, NEFT credit | Not yet |
-| HDFC Bank | [`hdfc.json`](src/main/resources/txnparse/rules/hdfc.json) | UPI debit, UPI credit, card spend | Not yet |
-| ICICI Bank | [`icici.json`](src/main/resources/txnparse/rules/icici.json) | UPI debit, UPI credit, card spend | Not yet |
-| State Bank of India | [`sbi.json`](src/main/resources/txnparse/rules/sbi.json) | UPI debit, UPI credit, ATM / transfer debit | Not yet |
+| Axis Bank | [`axis.json`](src/main/resources/txnparse/rules/axis.json) | UPI debit ✓, NEFT credit | 1 of 2 |
+| HDFC Bank | [`hdfc.json`](src/main/resources/txnparse/rules/hdfc.json) | UPI sent ✓, UPI received ✓, net-banking deduction ✓, autopay mandate ✓, card spend | 4 of 5 |
+| ICICI Bank | [`icici.json`](src/main/resources/txnparse/rules/icici.json) | UPI debit ✓, UPI credit, card spend | 1 of 3 |
+| State Bank of India | [`sbi.json`](src/main/resources/txnparse/rules/sbi.json) | UPI debit ✓ (3 variants), IMPS debit ✓ / credit ✓, transfer debit ✓ / credit ✓, "Debited/Credited INR" ✓, UPI "transfer from" credit | 9 of 10 |
+| SBI Card | [`sbicard.json`](src/main/resources/txnparse/rules/sbicard.json) | Card spend | 0 of 1 |
 
-> ⚠️ The starter rules are modelled on common message styles. They have **not yet been checked against real bank messages**, and banks change their wording often. If you have real (redacted) messages, please [open a bank format issue](https://github.com/akshar2324/txnparse/issues/new?template=bank-format.yml) or a PR. That's the most useful contribution right now.
+✓ means the format matches a real, redacted message seen in public bug reports or format contributions; the source link is in each sample's `source` field. The other formats are best guesses. If you have real (redacted) messages, please [open a bank format issue](https://github.com/akshar2324/txnparse/issues/new?template=bank-format.yml) or a PR. That's the most useful contribution right now.
+
+Credit card **bill payments** ("Payment of Rs.X received towards your credit card") are ignored by default. They move money between your own accounts, so counting them would double-count your card spends. Refunds to a card still parse.
 
 Other banks still get the generic fallback.
 

@@ -31,10 +31,19 @@ class TransactionParserTest {
             "rahul@okaxis has requested money of Rs 300 from your A/c. Approve in your UPI app." to "request",
             "Txn of Rs 999.00 on your card XX1234 has been declined." to "failed",
             "Rs 499.00 will be debited from A/c XX1234 on 25-Jan-26 for NETFLIX autopay." to "scheduled",
+            "Payment of Rs.23456.00 has been received towards your HDFC Bank Credit Card XX9012 on 05-11-26. Thank you." to "card_bill_payment",
+            "We have received payment of Rs.5,000.00 towards your SBI Credit Card ending 3456. Thank you." to "card_bill_payment",
         )
         cases.forEach { (sms, reason) ->
             assertEquals(ParseResult.Ignored(reason), parser.parse(sms), sms)
         }
+    }
+
+    @Test
+    fun `credit card refunds are not mistaken for bill payments`() {
+        val txn = parsed("Rs 500.00 credited to your HDFC Bank Credit Card XX9012 as refund from FLIPKART.")
+        assertEquals(TransactionType.CREDIT, txn.type)
+        assertEquals(BigDecimal("500.00"), txn.amount)
     }
 
     @Test

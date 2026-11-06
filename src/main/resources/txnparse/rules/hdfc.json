@@ -5,36 +5,64 @@
   "currency": "INR",
   "senders": ["HDFCBK", "HDFCBN"],
   "dateFormats": ["dd/MM/yy", "dd-MM-yy", "yyyy-MM-dd"],
-  "verified": false,
   "patterns": [
     {
       "type": "DEBIT",
+      "verified": true,
       "regex": "Sent (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) From HDFC Bank A/c [xX*]*(?<account>\\d{3,6}) To (?<merchant>.+?) On (?<date>\\d{2}/\\d{2}/\\d{2}) Ref (?<ref>\\d+)"
     },
     {
       "type": "CREDIT",
+      "verified": true,
       "regex": "(?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) credited to HDFC Bank A/c [xX*]*(?<account>\\d{3,6}) on (?<date>\\d{2}-\\d{2}-\\d{2}) from (?:VPA )?(?<merchant>.+?) \\(UPI (?<ref>\\d+)\\)"
     },
     {
       "type": "DEBIT",
+      "verified": true,
+      "regex": "Amt Deducted!? (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) from your HDFC Bank A/c [xX*]*(?<account>\\d{3,6})"
+    },
+    {
+      "type": "DEBIT",
+      "verified": true,
+      "regex": "Your HDFC Bank A/c [xX*]*(?<account>\\d{3,6}) has been debited (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{1,2}(?:st|nd|rd|th)? [A-Za-z]{3}'? \\d{4}) via (?:Debit Mandate|e-?Mandate|NACH|ECS) for (?<merchant>.+?)(?:\\. |\\.?$)",
+      "dateFormats": ["d MMM yyyy"]
+    },
+    {
+      "type": "DEBIT",
+      "verified": false,
       "regex": "Spent (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) On HDFC Bank Card [xX*]*(?<account>\\d{4}) At (?<merchant>.+?) On (?<date>\\d{4}-\\d{2}-\\d{2})"
     }
   ],
   "samples": [
     {
-      "sender": "VM-HDFCBK",
-      "sms": "Sent Rs.250.00\nFrom HDFC Bank A/C *1234\nTo SWIGGY\nOn 05/01/26\nRef 401234567890\nNot You? Call your bank",
-      "expected": { "type": "DEBIT", "amount": "250.00", "merchant": "SWIGGY", "account": "1234", "date": "2026-01-05", "ref": "401234567890", "channel": null }
+      "sender": "JD-HDFCBK-S",
+      "source": "https://github.com/PATILYASHH/XPENC/issues/165",
+      "sms": "Sent Rs.232.00\nFrom HDFC Bank A/C *4821\nTo KUMAR GENERAL STORE\nOn 14/10/26\nRef 629100004321\nNot You?\nCall 18002586161/SMS BLOCK UPI to 7308080808",
+      "expected": { "type": "DEBIT", "amount": "232.00", "merchant": "KUMAR GENERAL STORE", "account": "4821", "date": "2026-10-14", "ref": "629100004321", "channel": "UPI" }
     },
     {
       "sender": "AD-HDFCBK-S",
-      "sms": "Rs. 5,000.00 credited to HDFC Bank A/c XX1234 on 06-01-26 from VPA rahul@okaxis (UPI 401234567891)",
-      "expected": { "type": "CREDIT", "amount": "5000.00", "merchant": "rahul@okaxis", "account": "1234", "date": "2026-01-06", "ref": "401234567891", "channel": "UPI" }
+      "source": "https://github.com/PATILYASHH/XPENC/issues/165",
+      "sms": "Credit Alert!\nRs.3500.00 credited to HDFC Bank A/c XX4821 on 13-10-26 from VPA amit.k@okicici (UPI 629187650000)",
+      "expected": { "type": "CREDIT", "amount": "3500.00", "merchant": "amit.k@okicici", "account": "4821", "date": "2026-10-13", "ref": "629187650000", "channel": "UPI" }
+    },
+    {
+      "sender": "VM-HDFCBK",
+      "source": "https://github.com/Jayachandran-jayy/TU-Expense-Manager/issues/100",
+      "sms": "Amt Deducted! Rs.11500 from your HDFC Bank A/c XX4821 for NEFT txn via HDFC Bank Online Banking Not you?Call 18002586161/SMS BLOCK OB to 7308080808",
+      "expected": { "type": "DEBIT", "amount": "11500.00", "account": "4821", "channel": "NEFT" }
+    },
+    {
+      "sender": "VM-HDFCBK",
+      "source": "https://github.com/Jayachandran-jayy/TU-Expense-Manager/issues/95",
+      "sms": "Debit Alert! Your HDFC Bank A/c xx4821 has been debited Rs 1117 on 06th Oct' 2026 via Debit Mandate for RAZORPAY_SOFTWARE_PVT",
+      "expected": { "type": "DEBIT", "amount": "1117.00", "merchant": "RAZORPAY_SOFTWARE_PVT", "account": "4821", "date": "2026-10-06" }
     },
     {
       "sender": "JD-HDFCBK",
-      "sms": "Spent Rs.1,499.00 On HDFC Bank Card 5678 At AMAZON PAY INDIA On 2026-01-07:14:22:10 Not You? Call your bank",
-      "expected": { "type": "DEBIT", "amount": "1499.00", "merchant": "AMAZON PAY INDIA", "account": "5678", "date": "2026-01-07", "channel": "CARD" }
+      "source": "https://github.com/nozelrosario/net-worth-manager/issues/29",
+      "sms": "Spent Rs.1,499.00 On HDFC Bank Card 5678 At AMAZON PAY INDIA On 2026-10-23:17:58:06 Not You? To Block+Reissue Call 18002586161/SMS BLOCK CC 5678 to 7308080808",
+      "expected": { "type": "DEBIT", "amount": "1499.00", "merchant": "AMAZON PAY INDIA", "account": "5678", "date": "2026-10-23", "channel": "CARD" }
     }
   ]
 }

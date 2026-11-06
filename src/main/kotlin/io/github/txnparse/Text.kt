@@ -31,8 +31,15 @@ internal object Text {
 
     private val formatterCache = ConcurrentHashMap<String, DateTimeFormatter>()
 
+    private val ordinal = Regex("(?<=\\d)(st|nd|rd|th)\\b", RegexOption.IGNORE_CASE)
+
+    /**
+     * Parses [raw] with the first matching java.time pattern. Before parsing, ordinal
+     * suffixes and apostrophes are removed, so "06th Oct' 2026" parses with "d MMM yyyy".
+     */
     fun parseDate(raw: String?, formats: List<String>): LocalDate? {
         if (raw.isNullOrBlank()) return null
+        val cleaned = raw.replace(ordinal, "").replace("'", "").replace(whitespace, " ").trim()
         for (pattern in formats) {
             val formatter = formatterCache.getOrPut(pattern) {
                 // STRICT rejects impossible dates like 31-02 instead of rounding them.
@@ -44,7 +51,7 @@ internal object Text {
                     .withResolverStyle(ResolverStyle.STRICT)
             }
             try {
-                return LocalDate.parse(raw.trim(), formatter)
+                return LocalDate.parse(cleaned, formatter)
             } catch (_: Exception) {
                 // try the next format
             }

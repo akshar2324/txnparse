@@ -3,38 +3,120 @@
   "name": "State Bank of India",
   "country": "IN",
   "currency": "INR",
-  "senders": ["SBIUPI", "SBIINB", "SBIPSG", "ATMSBI", "CBSSBI"],
+  "senders": ["SBIUPI", "SBIINB", "SBIPSG", "ATMSBI", "CBSSBI", "SBIBNK"],
   "dateFormats": ["ddMMMyy", "dd/MM/yy", "dd-MM-yy"],
-  "verified": false,
   "patterns": [
     {
       "type": "DEBIT",
-      "regex": "A/C [xX*]*(?<account>\\d{3,6}) debited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on date (?<date>\\d{2}[A-Za-z]{3}\\d{2}) trf to (?<merchant>.+?) Refno (?<ref>\\d+)"
-    },
-    {
-      "type": "CREDIT",
-      "regex": "A/c [xX*]*(?<account>\\d{3,6})-credited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}[A-Za-z]{3}\\d{2}) transfer from (?<merchant>.+?) Ref No (?<ref>\\d+)"
+      "verified": true,
+      "regex": "A/C [xX*]*(?<account>\\d{3,6}) debited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on date (?<date>\\d{2}[A-Za-z]{3}\\d{2}) trf to (?<merchant>.+?) Ref ?no (?<ref>\\d+)"
     },
     {
       "type": "DEBIT",
+      "verified": true,
+      "regex": "A/c [xX*]*(?<account>\\d{3,6})-debited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}[A-Za-z]{3}\\d{2}) transfer to (?<merchant>.+?) Ref ?No (?<ref>\\d+)"
+    },
+    {
+      "type": "DEBIT",
+      "verified": true,
+      "regex": "(?:Rs\\.?\\s*)(?<amount>[\\d,]+(?:\\.\\d{1,2})?) debited@SBI UPI frm A/c ?[xX*]*(?<account>\\d{3,6}) on (?<date>\\d{2}[A-Za-z]{3}\\d{2}) Ref ?No (?<ref>\\d+)"
+    },
+    {
+      "type": "CREDIT",
+      "verified": false,
+      "regex": "A/c (?:no\\.? )?[xX*]*(?<account>\\d{3,6})(?:-| is )credited by (?:Rs\\.?\\s*)?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}[A-Za-z]{3}\\d{2}) transfer from (?<merchant>.+?) Ref ?No (?<ref>\\d+)"
+    },
+    {
+      "type": "DEBIT",
+      "verified": true,
+      "regex": "a/c no\\. [xX*]*(?<account>\\d{3,6}) is debited for (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}-\\d{2}-\\d{2}) and a/c [xX*]*\\d+ credited \\(IMPS Ref no (?<ref>\\d+)\\)"
+    },
+    {
+      "type": "CREDIT",
+      "verified": true,
+      "regex": "a/c no\\. [xX*]*(?<account>\\d{3,6}) is credited by (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}-\\d{2}-\\d{2}) by a/c linked to mobile [\\dxX]+-(?<merchant>.+?) \\(IMPS Ref no (?<ref>\\d+)\\)"
+    },
+    {
+      "type": "DEBIT",
+      "verified": true,
       "regex": "A/C [xX*]*(?<account>\\d{3,6}) has a debit by (?:transfer|ATM withdrawal|cash withdrawal) of (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}/\\d{2}/\\d{2})\\. Avl Bal (?:Rs\\.?|INR)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
+    },
+    {
+      "type": "CREDIT",
+      "verified": true,
+      "regex": "A/C [xX*]*(?<account>\\d{3,6}) has a credit by transfer of (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}/\\d{2}/\\d{2})(?: by (?<merchant>.+?))?\\. Avl Bal (?:Rs\\.?|INR)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
+    },
+    {
+      "type": "DEBIT",
+      "verified": true,
+      "regex": "A/?C [xX*]*(?<account>\\d{3,6}) Debited (?:INR|Rs\\.?)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}/\\d{2}/\\d{2}) ?-(?<merchant>.+?)\\. Avl Bal (?:INR|Rs\\.?)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
+    },
+    {
+      "type": "CREDIT",
+      "verified": true,
+      "regex": "A/?C [xX*]*(?<account>\\d{3,6}) Credited (?:INR|Rs\\.?)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}/\\d{2}/\\d{2}) ?-(?:Deposit by transfer from )?(?<merchant>.+?)\\. Avl Bal (?:INR|Rs\\.?)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
     }
   ],
   "samples": [
     {
-      "sender": "BP-SBIUPI",
-      "sms": "Dear UPI user A/C X4321 debited by 120.0 on date 11Jan26 trf to CHAI POINT Refno 401234567894. If not u? call your bank -SBI",
-      "expected": { "type": "DEBIT", "amount": "120.00", "merchant": "CHAI POINT", "account": "4321", "date": "2026-01-11", "ref": "401234567894", "channel": "UPI" }
+      "sender": "AX-SBIUPI-S",
+      "source": "https://github.com/ritesh-kanwar/Cashiro/issues/186",
+      "sms": "Dear UPI user A/C X7302 debited by 5.00 on date 11Oct26 trf to MEENA  R K Refno 244640011111 If not u? call-1800111109 for other services-18001234-SBI",
+      "expected": { "type": "DEBIT", "amount": "5.00", "merchant": "MEENA R K", "account": "7302", "date": "2026-10-11", "ref": "244640011111", "channel": "UPI" }
+    },
+    {
+      "sender": "VM-SBIUPI",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Dear SBI User, your A/c X7302-debited by Rs640.0 on 29Sep26 transfer to RELIANCE RETAIL Ref No 627200001234. If not done by u, fwd this SMS to 9223008333/Call 1800111109 or 09449112211 to block UPI -SBI",
+      "expected": { "type": "DEBIT", "amount": "640.00", "merchant": "RELIANCE RETAIL", "account": "7302", "date": "2026-09-29", "ref": "627200001234", "channel": "UPI" }
+    },
+    {
+      "sender": "VM-SBIUPI",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Rs85.0 debited@SBI UPI frm A/cX7302 on 27Sep26 RefNo 627000005678. If not done by u, fwd this SMS to 9223008333/Call 1800111109 or 09449112211 to block UPI",
+      "expected": { "type": "DEBIT", "amount": "85.00", "account": "7302", "date": "2026-09-27", "ref": "627000005678", "channel": "UPI" }
     },
     {
       "sender": "AD-SBIUPI",
-      "sms": "Dear SBI User, your A/c X4321-credited by Rs.2500 on 12Jan26 transfer from PRIYA SHARMA Ref No 401234567895 -SBI",
-      "expected": { "type": "CREDIT", "amount": "2500.00", "merchant": "PRIYA SHARMA", "account": "4321", "date": "2026-01-12", "ref": "401234567895" }
+      "source": "https://github.com/opensawce/kaasu/pull/100",
+      "sms": "Your a/c no. XXXXXXXX7302 is credited by Rs.1,250.00 on 23Oct26 transfer from SUNIL MEHTA Ref No 629800009876 -SBI",
+      "expected": { "type": "CREDIT", "amount": "1250.00", "merchant": "SUNIL MEHTA", "account": "7302", "date": "2026-10-23", "ref": "629800009876" }
     },
     {
-      "sender": "ATMSBI",
-      "sms": "Your A/C XXXXX4321 has a debit by ATM withdrawal of Rs 2,000.00 on 13/01/26. Avl Bal Rs 18,250.50.-SBI",
-      "expected": { "type": "DEBIT", "amount": "2000.00", "account": "4321", "balance": "18250.50", "date": "2026-01-13", "channel": "ATM" }
+      "sender": "SBIINB",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Dear Customer, Your a/c no. XXXXXXXX7302 is debited for Rs.2,000.00 on 14-10-26 and a/c XXXXXXX4410 credited (IMPS Ref no 628700001111).If not done by you, call 1800111109 -SBI",
+      "expected": { "type": "DEBIT", "amount": "2000.00", "account": "7302", "date": "2026-10-14", "ref": "628700001111", "channel": "IMPS" }
+    },
+    {
+      "sender": "SBIINB",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Dear Customer, Your a/c no. XXXXXXXX7302 is credited by Rs.7,500.00 on 18-10-26 by a/c linked to mobile 9XXXXXX123-KOTAK BANK (IMPS Ref no 629100002222).If not done by you, call 1800111109. -SBI",
+      "expected": { "type": "CREDIT", "amount": "7500.00", "merchant": "KOTAK BANK", "account": "7302", "date": "2026-10-18", "ref": "629100002222", "channel": "IMPS" }
+    },
+    {
+      "sender": "CBSSBI",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Dear Customer, Your A/C XXXXX347302 has a debit by transfer of Rs 2,000.00 on 13/10/26. Avl Bal Rs 18,250.50.-SBI",
+      "expected": { "type": "DEBIT", "amount": "2000.00", "account": "347302", "balance": "18250.50", "date": "2026-10-13" }
+    },
+    {
+      "sender": "CBSSBI",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Dear Customer, Your A/C XXXXX347302 has a credit by Transfer of Rs 310.00 on 13/10/26 by Bank. Avl Bal Rs 18,560.50.-SBI",
+      "expected": { "type": "CREDIT", "amount": "310.00", "merchant": "Bank", "account": "347302", "balance": "18560.50", "date": "2026-10-13" }
+    },
+    {
+      "sender": "CBSSBI",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Your AC XXXXX347302 Debited INR 118.00 on 13/10/26 -Service Charge for forex trans. Avl Bal INR 18,442.50.-SBI",
+      "expected": { "type": "DEBIT", "amount": "118.00", "merchant": "Service Charge for forex trans", "account": "347302", "balance": "18442.50", "date": "2026-10-13" }
+    },
+    {
+      "sender": "CBSSBI",
+      "source": "https://gist.github.com/avinal/4079e1752e5b987530315b4802e51287",
+      "sms": "Your A/C XXXXX347302 Credited INR 25,000.00 on 15/10/26 -Deposit by transfer from NEHA JOSHI. Avl Bal INR 43,442.50-SBI",
+      "expected": { "type": "CREDIT", "amount": "25000.00", "merchant": "NEHA JOSHI", "account": "347302", "balance": "43442.50", "date": "2026-10-15" }
     }
   ]
 }

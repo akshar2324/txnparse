@@ -1,0 +1,23 @@
+{
+  "id": "sbicard",
+  "name": "SBI Card",
+  "country": "IN",
+  "currency": "INR",
+  "senders": ["SBICRD", "SBICARD"],
+  "dateFormats": ["dd/MM/yy", "dd-MM-yy"],
+  "patterns": [
+    {
+      "type": "DEBIT",
+      "verified": false,
+      "regex": "Transaction of (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) made on your SBI Credit Card ending (?<account>\\d{4}) at (?<merchant>.+?) on (?<date>\\d{2}/\\d{2}/\\d{2})"
+    }
+  ],
+  "samples": [
+    {
+      "sender": "CP-SBICRD",
+      "source": "https://github.com/RagedPanda/hisab/issues/121",
+      "sms": "Transaction of Rs.799.00 made on your SBI Credit Card ending 3456 at NETFLIX COM on 20/10/26. If not done by you, report at https://sbicard.com/Dispute",
+      "expected": { "type": "DEBIT", "amount": "799.00", "merchant": "NETFLIX COM", "account": "3456", "date": "2026-10-20", "channel": "CARD" }
+    }
+  ]
+}

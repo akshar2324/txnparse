@@ -28,5 +28,8 @@ class TextTest {
         assertEquals(LocalDate.of(2026, 1, 8), Text.parseDate("08-JAN-26", listOf("dd-MMM-yy")))
         assertEquals(LocalDate.of(2026, 1, 11), Text.parseDate("11Jan26", listOf("dd/MM/yy", "ddMMMyy")))
         assertNull(Text.parseDate("31-02-26", listOf("dd-MM-yy")))
+        // HDFC mandate style: ordinal suffix and a stray apostrophe.
+        assertEquals(LocalDate.of(2026, 10, 6), Text.parseDate("06th Oct' 2026", listOf("d MMM yyyy")))
+        assertEquals(LocalDate.of(2026, 11, 1), Text.parseDate("1st Nov 2026", listOf("d MMM yyyy")))
     }
 }

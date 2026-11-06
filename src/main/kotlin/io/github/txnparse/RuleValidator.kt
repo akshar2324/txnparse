@@ -25,6 +25,12 @@ public object RuleValidator {
                 is ParseResult.Parsed -> problems += compare(label, sample.expected, result.transaction)
             }
         }
+        // Every pattern must be exercised by at least one sample, or a broken regex goes unnoticed.
+        rule.patterns.forEachIndexed { i, pattern ->
+            val single = TransactionParser(listOf(rule.copy(patterns = listOf(pattern))), useGenericFallback = false)
+            val covered = rule.samples.any { s -> single.parseOrNull(s.sms, s.sender ?: rule.senders.first()) != null }
+            if (!covered) problems += "[${rule.id}] pattern $i has no sample that matches it"
+        }
         return problems
     }
 

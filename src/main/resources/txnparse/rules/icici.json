@@ -3,38 +3,71 @@
   "name": "ICICI Bank",
   "country": "IN",
   "currency": "INR",
-  "senders": ["ICICIB", "ICICIT"],
-  "dateFormats": ["dd-MMM-yy", "dd-MM-yy"],
-  "verified": false,
+  "senders": [
+    "ICICIB",
+    "ICICIT"
+  ],
+  "dateFormats": [
+    "dd-MMM-yy",
+    "dd-MM-yy"
+  ],
   "patterns": [
     {
       "type": "DEBIT",
+      "verified": true,
       "regex": "ICICI Bank Acc(?:oun)?t [xX*]*(?<account>\\d{3,6}) debited for (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}-[A-Za-z]{3}-\\d{2}); (?<merchant>.+?) credited\\. UPI:(?<ref>\\d+)"
     },
     {
       "type": "CREDIT",
+      "verified": false,
       "regex": "Acc(?:oun)?t [xX*]*(?<account>\\d{3,6}) is credited with (?:Rs\\.?|INR)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) on (?<date>\\d{2}-[A-Za-z]{3}-\\d{2}) from (?<merchant>.+?)\\. UPI:(?<ref>\\d+)"
     },
     {
       "type": "DEBIT",
+      "verified": false,
       "regex": "(?:INR|Rs\\.?)\\s*(?<amount>[\\d,]+(?:\\.\\d{1,2})?) spent using ICICI Bank Card [xX*]*(?<account>\\d{4}) on (?<date>\\d{2}-[A-Za-z]{3}-\\d{2}) on (?<merchant>.+?)\\. Avl Limit: (?:INR|Rs\\.?)\\s*(?<balance>[\\d,]+(?:\\.\\d{1,2})?)"
     }
   ],
   "samples": [
     {
       "sender": "VK-ICICIB",
+      "source": "https://github.com/issaczerubbabela/L-Edgar/issues/91",
       "sms": "ICICI Bank Acct XX123 debited for Rs 349.00 on 08-Jan-26; NETFLIX credited. UPI:401234567892. Call your bank for dispute.",
-      "expected": { "type": "DEBIT", "amount": "349.00", "merchant": "NETFLIX", "account": "123", "date": "2026-01-08", "ref": "401234567892", "channel": "UPI" }
+      "expected": {
+        "type": "DEBIT",
+        "amount": "349.00",
+        "merchant": "NETFLIX",
+        "account": "123",
+        "date": "2026-01-08",
+        "ref": "401234567892",
+        "channel": "UPI"
+      }
     },
     {
       "sender": "AX-ICICIB",
       "sms": "Dear Customer, Acct XX123 is credited with Rs 12,000.00 on 09-Jan-26 from ACME PAYROLL. UPI:401234567893-ICICI Bank.",
-      "expected": { "type": "CREDIT", "amount": "12000.00", "merchant": "ACME PAYROLL", "account": "123", "date": "2026-01-09", "ref": "401234567893", "channel": "UPI" }
+      "expected": {
+        "type": "CREDIT",
+        "amount": "12000.00",
+        "merchant": "ACME PAYROLL",
+        "account": "123",
+        "date": "2026-01-09",
+        "ref": "401234567893",
+        "channel": "UPI"
+      }
     },
     {
       "sender": "ICICIT",
       "sms": "INR 2,150.00 spent using ICICI Bank Card XX9012 on 10-JAN-26 on BIGBASKET. Avl Limit: INR 47,850.00. If not you, call your bank.",
-      "expected": { "type": "DEBIT", "amount": "2150.00", "merchant": "BIGBASKET", "account": "9012", "balance": "47850.00", "date": "2026-01-10", "channel": "CARD" }
+      "expected": {
+        "type": "DEBIT",
+        "amount": "2150.00",
+        "merchant": "BIGBASKET",
+        "account": "9012",
+        "balance": "47850.00",
+        "date": "2026-01-10",
+        "channel": "CARD"
+      }
     }
   ]
 }

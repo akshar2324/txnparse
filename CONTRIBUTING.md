@@ -33,16 +33,17 @@ Open a **Bank format** issue with 2 or more redacted messages and the sender ID.
   "currency": "INR",
   "senders": ["KOTAKB"],
   "dateFormats": ["dd-MM-yy"],
-  "verified": true,
   "patterns": [
     {
       "type": "DEBIT",
+      "verified": true,
       "regex": "Sent Rs\\.?(?<amount>[\\d,]+(?:\\.\\d{1,2})?) from Kotak Bank AC [xX*]*(?<account>\\d{3,6}) to (?<merchant>.+?) on (?<date>\\d{2}-\\d{2}-\\d{2})\\.UPI Ref (?<ref>\\d+)"
     }
   ],
   "samples": [
     {
       "sender": "VM-KOTAKB",
+      "source": "https://github.com/akshar2324/txnparse/issues/<number>",
       "sms": "<redacted real message>",
       "expected": { "type": "DEBIT", "amount": "100.00", "merchant": "...", "account": "1234", "date": "2026-01-05", "ref": "..." }
     }
@@ -54,10 +55,11 @@ Open a **Bank format** issue with 2 or more redacted messages and the sender ID.
 |---|---|
 | `senders` | Sender ID fragments. `HDFCBK` matches `VM-HDFCBK`, `AD-HDFCBK-S`, etc. |
 | `dateFormats` | [java.time patterns](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns), tried in order. Month names are case-insensitive. Can be overridden per pattern. |
-| `verified` | Set `true` only if the samples come from real (redacted) messages. |
+| `patterns[].verified` | Set `true` only if the format matches a real (redacted) message. |
 | `patterns[].regex` | Matched case-insensitively against the message with **all whitespace collapsed to single spaces**, so write newlines as a space. |
 | Named groups | `amount` (required), `merchant`, `account`, `balance`, `date`, `ref`. |
-| `samples` | **Required.** At least one per pattern. Fields left out of `expected` aren't checked. |
+| `samples` | **Required.** Every pattern must match at least one sample (the tests check this). Fields left out of `expected` aren't checked. |
+| `samples[].source` | Optional link to where the real format was seen, such as an issue. |
 
 ### Regex tips
 

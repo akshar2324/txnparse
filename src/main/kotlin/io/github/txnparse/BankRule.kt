@@ -19,8 +19,6 @@ public data class BankRule(
     val senders: List<String>,
     /** java.time patterns tried for the `date` group, e.g. "dd-MM-yy". */
     val dateFormats: List<String> = emptyList(),
-    /** True once the formats were checked against real (redacted) messages. */
-    val verified: Boolean = false,
     val patterns: List<PatternRule>,
     /** Example messages with expected output. Every sample is run by the test suite. */
     val samples: List<RuleSample> = emptyList(),
@@ -32,12 +30,16 @@ public data class PatternRule(
     val regex: String,
     /** Overrides [BankRule.dateFormats] for this pattern. */
     val dateFormats: List<String> = emptyList(),
+    /** True once this format has been seen in a real (redacted) message. */
+    val verified: Boolean = false,
 )
 
 @Serializable
 public data class RuleSample(
     val sms: String,
     val sender: String? = null,
+    /** Where the real format was seen, e.g. a public issue URL. The sample text itself is redacted. */
+    val source: String? = null,
     val expected: ExpectedFields,
 )
 
